@@ -1,0 +1,7 @@
+score	groups
+cb_halstead_simple_div	0.868431178875861	a
+cb_halstead_inherit_div	0.86555230426939	a
+cb_halstead_simple_bt	0.766777046889518	ab
+cb_halstead_simple	0.75624739658641	ab
+cb_halstead_inherit_bt	0.750300041853847	ab
+cb_halstead_inherit	0.741403905800969	b

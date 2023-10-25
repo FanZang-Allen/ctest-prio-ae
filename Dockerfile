@@ -10,6 +10,14 @@ RUN sudo apt-get install -y less
 
 RUN apt-get install -y python3 python3-pip
 RUN pip3 install gensim==3.8.3
+
+RUN apt update -y
+RUN apt install -y software-properties-common
+RUN add-apt-repository universe
+
+# install matplotlib
+RUN apt install -y libjpeg-dev zlib1g-dev
+RUN pip3 install --upgrade pip setuptools wheel
 RUN pip3 install matplotlib
 
 RUN sudo apt install -y apt-transport-https software-properties-common

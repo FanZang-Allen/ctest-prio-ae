@@ -141,6 +141,37 @@ def code_coverage(level):
     mapping = {k: set(v) for k, v in mapping.items()}
     return mapping
 
+#################### parsing test -> cyclomatic complexity mapping
+def cyclomatic_complexity():
+    path = CYCLOMATIC_FILE.format(PROJECT, PROJECT)
+    mapping = {}
+    if not os.path.exists(path):
+        print(f"{path} not found.")
+        return mapping
+
+    data = [x.strip("\n").split("\t") for x in open(path)]
+    for row in data:
+        mapping[row[0]] = [int(row[1])]
+    return mapping
+
+#################### parsing test -> halstead metric mapping
+def halstead_metric(level):
+    path = ""
+    if level == "simple":
+        path = HALSTEAD_FILE_SIMPLE.format(PROJECT, PROJECT)
+    elif level == "inherit":
+        path = HALSTEAD_FILE_INHERIT.format(PROJECT, PROJECT)
+    mapping = {}
+    if not os.path.exists(path):
+        print(f"{path} not found.")
+        return mapping
+    data = [x.strip("\n").split("\t") for x in open(path)]
+    for row in data:
+        class_name = row[0]
+        # N:Program Length, n: Program Vocabulary, V: Program Volume, D: Program Difficulty, E: Program Effort
+        mapping[class_name] = [float(x) for x in row[5:]]
+        assert len(mapping[class_name]) == 5
+    return mapping
 
 ####################### parsing config trace coverage
 

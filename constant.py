@@ -7,7 +7,8 @@ CC_DIR = os.path.join(TESTINFO_DIR, "codeCoverage")
 EXECTIME_DIR = os.path.join(TESTINFO_DIR, "execTime")
 IRDOC_DIR = os.path.join(TESTINFO_DIR, "irDoc")
 TRACE_DIR = os.path.join(TESTINFO_DIR, "stackTrace")
-
+CYCLO_DIR = os.path.join(TESTINFO_DIR, "cyclomaticComplexity")
+HALSTEAD_DIR = os.path.join(TESTINFO_DIR, "halsteadMetric")
 
 HCOMMON = "hadoop-common"
 HDFS = "hadoop-hdfs"
@@ -50,6 +51,11 @@ TRACE_FILE = os.path.join(TRACE_DIR, "{}/{}-method.json")
 HIGH = "high"
 LOW = "low" 
 
+# Complexity based metric
+CYCLOMATIC_FILE = os.path.join(CYCLO_DIR, "{}/{}-ctest.tsv")
+HALSTEAD_FILE = os.path.join(HALSTEAD_DIR, "{}/{}.tsv")
+HALSTEAD_FILE_SIMPLE = os.path.join(HALSTEAD_DIR, "{}/{}-ctest-simple.tsv")
+HALSTEAD_FILE_INHERIT = os.path.join(HALSTEAD_DIR, "{}/{}-ctest-inherit.tsv")
 
 # Ctest dataset
 CTEST_MAPPING = os.path.join(CTESTDATA_DIR, "ctestMapping/opensource-{}.json")
@@ -97,6 +103,10 @@ A_STC_M = "add_st-chg"
 IR_TEST_HIGH = "ir_test_high"
 IR_TEST_LOW = "ir_test_low"
 
+# CB: Complexity based, CY: cyclomatic complexity metric, HA: Halstead software metric
+CB_CY = "cb_cyclo"
+CB_HA_S = "cb_halstead_simple"
+CB_HA_I = "cb_halstead_inherit"
 
 # hybrid, divided by time
 RANDOMIZED_DIV = "randomized_div"
@@ -115,6 +125,9 @@ IR_TEST_LOW_DIV = "ir_test_low_div"
 IR_TEST_HIGH_DIV = "ir_test_high_div"
 T_CC_S_DIV = "tot_ccs_div"
 A_CC_S_DIV = "add_ccs_div"
+CB_CY_DIV = "cb_cyclo_div"
+CB_HA_S_DIV = "cb_halstead_simple_div"
+CB_HA_I_DIV = "cb_halstead_inherit_div"
 
 # hybrid, break tie by time
 RANDOMIZED_BT = "randomized_bt"
@@ -133,6 +146,9 @@ IR_TEST_LOW_BT = "ir_test_low_bt"
 IR_TEST_HIGH_BT = "ir_test_high_bt"
 T_CC_S_BT = "tot_ccs_bt"
 A_CC_S_BT = "add_ccs_bt"
+CB_CY_BT = "cb_cyclo_bt"
+CB_HA_S_BT = "cb_halstead_simple_bt"
+CB_HA_I_BT = "cb_halstead_inherit_bt"
 
 
 # peer based: pf

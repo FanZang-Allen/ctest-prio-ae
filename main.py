@@ -44,6 +44,12 @@ def load_prio_data(tcp):
         return peer.pf_pcc()
     elif tcp in [T_PF_RCC, A_PF_RCC]:
         return peer.pf_rcc()
+    elif tcp in [CB_CY]:
+        return parsing_utils.cyclomatic_complexity()
+    elif tcp in [CB_HA_S]:
+        return parsing_utils.halstead_metric("simple")
+    elif tcp in [CB_HA_I]:
+        return parsing_utils.halstead_metric("inherit")
 
     # hybrid
     data = {"d1": {}, "d2": {}, "d3": {}}
@@ -91,6 +97,15 @@ def load_prio_data(tcp):
     elif tcp in [T_PF_RCC_DIV, A_PF_RCC_DIV, T_PF_RCC_BT, A_PF_RCC_BT]:
         data["d1"] = peer.pf_rcc()
         data["d2"] = parsing_utils.default_runtime()
+    elif tcp in [CB_CY_DIV, CB_CY_BT]:
+        data["d1"] = parsing_utils.cyclomatic_complexity()
+        data["d2"] = parsing_utils.default_runtime()
+    elif tcp in [CB_HA_S_DIV, CB_HA_S_BT]:
+        data["d1"] = parsing_utils.halstead_metric("simple")
+        data["d2"] = parsing_utils.default_runtime()
+    elif tcp in [CB_HA_I_DIV, CB_HA_I_BT]:
+        data["d1"] = parsing_utils.halstead_metric("inherit")
+        data["d2"] = parsing_utils.default_runtime()
     else:
         exit("load_prio_data: unknown tcp: {}".format(tcp))
     return data
@@ -112,6 +127,8 @@ def prioritize(imgname, tcp, testinfo):
             prio.qtf()
         elif tcp.startswith("ir"):
             prio.ir()
+        elif tcp.startswith("cb"):
+            prio.complexity_based()
         else:
             exit("prioritize: unknown basic tcp: {}".format(tcp))
     else:
@@ -126,6 +143,8 @@ def prioritize(imgname, tcp, testinfo):
             prio.randomized_hybrid()
         elif tcp in [QTF_DIV, QTF_BT]:
             prio.qtf_hybrid()
+        elif tcp.startswith("cb"):
+            prio.complexity_hybrid()
         else:
             exit("prioritize: unknown hybrid tcp: {}".format(tcp))
     return prio.logs

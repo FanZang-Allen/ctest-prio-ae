@@ -172,6 +172,21 @@ final = ("final", [
 
 fast = ("fast", [RANDOMIZED, QTF])
 
+complexity_cyclo = ("complexity_cyclo", [
+    CB_CY,
+    CB_CY_BT,
+    CB_CY_DIV,
+    ])
+
+complexity_halstead = ("complexity_halstead", [
+    CB_HA_S,
+    CB_HA_S_DIV,
+    CB_HA_S_BT,
+    CB_HA_I,
+    CB_HA_I_DIV,
+    CB_HA_I_BT,
+    ])
+
 groups = {
     "alltcp": alltcp,
     "nonpeer": nonpeer,
@@ -182,5 +197,7 @@ groups = {
     "peer_bt": peer_bt,
     "final": final,
     "fast": fast, # intro example
+    "complexity_cyclo": complexity_cyclo,
+    "complexity_halstead": complexity_halstead,
     # "YOUR_GROUP": your_group,
 }

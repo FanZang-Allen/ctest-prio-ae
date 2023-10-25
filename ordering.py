@@ -35,7 +35,8 @@ class Prio:
         ret = []
         for tname, t in self.tinfo.items():
             cp = deepcopy(t)
-            cp.rd = rankdata[tname]
+            if tname in rankdata:
+                cp.rd = rankdata[tname]
             ret.append(cp)
         return ret
 
@@ -61,9 +62,14 @@ class Prio:
         tests = self.build_tests(rankdata)
         self.run_helper(tests, desc=False)
 
+    def complexity_based(self):
+        """complexity-based TCP useing only cyclomatic metric"""
+        rankdata = self.img_dependent(self.pdata)
+        tests = self.build_tests(rankdata)
+        self.run_helper(tests, desc=True)
 
     def run_helper(self, tests, desc):
-        """helper for randomized(), total(), qtf()"""
+        """helper for randomized(), total(), qtf(), complexity_based()"""
         result = []
         data = [deepcopy(t) for t in tests]
         for i in range(NRUN):
@@ -149,6 +155,19 @@ class Prio:
             result.append(self.m.compute_metrics())
             self.log_run(project, i, result[-1])
 
+    def complexity_hybrid(self):
+        """complexity based time-sensitive hybrid TCP"""
+        pdata = self.img_dependent(self.pdata["d1"])
+        tests = self.build_tests(pdata)
+        result = []
+        runtime = {t: self.pdata["d2"][t]["average"] for t in self.pdata["d2"]}
+        for i in range(NRUN):
+            if self.tcp.endswith("_div"):
+                self.m.pt = sorted(tests, key=lambda x:([-1 * k / runtime[x.name] for k in x.rd], bt()))
+            elif self.tcp.endswith("_bt"):
+                self.m.pt = sorted(tests, key=lambda x:([-1 * k for k in x.rd], runtime[x.name], bt()))
+            result.append(self.m.compute_metrics())
+            self.log_run(project, i, result[-1])
 
     def additional_hybrid(self):
         """additional time-sensitive hybrid TCP"""
