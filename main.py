@@ -12,6 +12,7 @@ TCPS = pinput["tcps"][1]
 
 
 def load_prio_data(tcp):
+    print("load " + tcp + " data")
     if tcp in [RANDOMIZED]:
         return {}
     elif tcp in [T_CC_M, A_CC_M]:
@@ -46,10 +47,30 @@ def load_prio_data(tcp):
         return peer.pf_rcc()
     elif tcp in [CB_CY]:
         return parsing_utils.cyclomatic_complexity()
+    elif tcp in [CB_CY_HA_S_V, CB_CY_HA_S_L, CB_CY_HA_S_N, CB_CY_HA_S_VN, CB_CY_HA_S_VL]:
+        cb_data = parsing_utils.cyclomatic_complexity()
+        metric = tcp.split("_")[4:]
+        ha_data = parsing_utils.halstead_metric("simple", metric)
+        for key, value in ha_data.items():
+            ha_data[key] = cb_data[key] + value
+        return ha_data
     elif tcp in [CB_HA_S]:
         return parsing_utils.halstead_metric("simple")
+    elif tcp in [CB_HA_S_D, CB_HA_S_E, CB_HA_S_L, CB_HA_S_N, CB_HA_S_V]:
+        metric = tcp.split("_")[3:]
+        return parsing_utils.halstead_metric("simple", metric)
     elif tcp in [CB_HA_I]:
         return parsing_utils.halstead_metric("inherit")
+    elif tcp in [CB_HA_I_D, CB_HA_I_E, CB_HA_I_L, CB_HA_I_N, CB_HA_I_V]:
+        metric = tcp.split("_")[3:]
+        return parsing_utils.halstead_metric("inherit", metric)
+    elif tcp in [CB_CY_HA_I_V, CB_CY_HA_I_L, CB_CY_HA_I_N, CB_CY_HA_I_VN, CB_CY_HA_I_VL]:
+        cb_data = parsing_utils.cyclomatic_complexity()
+        metric = tcp.split("_")[4:]
+        ha_data = parsing_utils.halstead_metric("inherit", metric)
+        for key, value in ha_data.items():
+            ha_data[key] = cb_data[key] + value
+        return ha_data
 
     # hybrid
     data = {"d1": {}, "d2": {}, "d3": {}}
@@ -105,6 +126,30 @@ def load_prio_data(tcp):
         data["d2"] = parsing_utils.default_runtime()
     elif tcp in [CB_HA_I_DIV, CB_HA_I_BT]:
         data["d1"] = parsing_utils.halstead_metric("inherit")
+        data["d2"] = parsing_utils.default_runtime()
+    elif tcp in [CB_HA_S_D_DIV, CB_HA_S_E_DIV, CB_HA_S_L_DIV, CB_HA_S_N_DIV, CB_HA_S_V_DIV, CB_HA_S_D_BT, CB_HA_S_E_BT, CB_HA_S_L_BT, CB_HA_S_N_BT, CB_HA_S_V_BT]:
+        metric = tcp.split("_")[3:-1]
+        data["d1"] = parsing_utils.halstead_metric("simple", metric)
+        data["d2"] = parsing_utils.default_runtime()
+    elif tcp in [CB_CY_HA_S_V_DIV, CB_CY_HA_S_L_DIV, CB_CY_HA_S_N_DIV, CB_CY_HA_S_VN_DIV, CB_CY_HA_S_VL_DIV, CB_CY_HA_S_V_BT, CB_CY_HA_S_L_BT, CB_CY_HA_S_N_BT, CB_CY_HA_S_VN_BT, CB_CY_HA_S_VL_BT]:
+        metric = tcp.split("_")[4:-1]
+        cb_data = parsing_utils.cyclomatic_complexity()
+        ha_data = parsing_utils.halstead_metric("simple", metric)
+        for key, value in ha_data.items():
+            ha_data[key] = cb_data[key] + value
+        data["d1"] = ha_data
+        data["d2"] = parsing_utils.default_runtime()
+    elif tcp in [CB_HA_I_D_DIV, CB_HA_I_E_DIV, CB_HA_I_L_DIV, CB_HA_I_N_DIV, CB_HA_I_V_DIV, CB_HA_I_D_BT, CB_HA_I_E_BT, CB_HA_I_L_BT, CB_HA_I_N_BT, CB_HA_I_V_BT]:
+        metric = tcp.split("_")[3:-1]
+        data["d1"] = parsing_utils.halstead_metric("inherit", metric)
+        data["d2"] = parsing_utils.default_runtime()
+    elif tcp in [CB_CY_HA_I_V_DIV, CB_CY_HA_I_L_DIV, CB_CY_HA_I_N_DIV, CB_CY_HA_I_VN_DIV, CB_CY_HA_I_VL_DIV, CB_CY_HA_I_V_BT, CB_CY_HA_I_L_BT, CB_CY_HA_I_N_BT, CB_CY_HA_I_VN_BT, CB_CY_HA_I_VL_BT]:
+        metric = tcp.split("_")[4:-1]
+        cb_data = parsing_utils.cyclomatic_complexity()
+        ha_data = parsing_utils.halstead_metric("inherit", metric)
+        for key, value in ha_data.items():
+            ha_data[key] = cb_data[key] + value
+        data["d1"] = ha_data
         data["d2"] = parsing_utils.default_runtime()
     else:
         exit("load_prio_data: unknown tcp: {}".format(tcp))
