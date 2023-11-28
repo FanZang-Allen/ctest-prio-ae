@@ -63,10 +63,40 @@ class Prio:
         self.run_helper(tests, desc=False)
 
     def complexity_based(self):
-        """complexity-based TCP useing only cyclomatic metric"""
+        """complexity-based TCP"""
         rankdata = self.img_dependent(self.pdata)
         tests = self.build_tests(rankdata)
         self.run_helper(tests, desc=True)
+
+    def complexity_augmented(self, additional=False):
+        pdata = self.img_dependent(self.pdata["d1"])
+        tdata = self.pdata["d2"]
+        cdata = tdata.copy()
+        for t, v in tdata.items():
+            if t[-1] == ']' and t[-3] == '[':
+                if t[:-3] not in cdata:
+                    cdata[t[:-3]] = v
+        if additional:
+            tests = self.build_tests(pdata)
+            result = []
+            for i in range(NRUN):
+                self.m.pt = self.additional_helper(tests, cdata=cdata)
+                result.append(self.m.compute_metrics())
+                self.log_run(project, i, result[-1])
+        else:
+            rankdata = {}
+            for t, v in pdata.items():
+                if t in cdata:
+                    rankdata[t] = [len(v)] + cdata[t]
+                elif t[:-3] in cdata:
+                    rankdata[t] = [len(v)] + cdata[t[:-3]]
+                else:
+                    # print(t + " not in cdata")
+                    rankdata[t] = [len(v)] + [0.0,0.0,0.0]
+            # rankdata = {t: [len(v)] + cdata[t] for t, v in pdata.items()}
+            tests = self.build_tests(rankdata)
+            self.run_helper(tests, desc=True)
+
 
     def run_helper(self, tests, desc):
         """helper for randomized(), total(), qtf(), complexity_based()"""
@@ -88,15 +118,16 @@ class Prio:
             self.m.pt = self.additional_helper(tests)
             result.append(self.m.compute_metrics())
             self.log_run(project, i, result[-1])
+            print("complete 1 additional iteration")
 
 
-    def additional_helper(self, tests):
+    def additional_helper(self, tests, cdata=None):
         """helper for additional()"""
         ptests = []
         data = {t.name: deepcopy(t) for t in tests}
         while len(data):
             # find the test with max additional coverage
-            addt = max_add_test(data=data)
+            addt = max_add_test(data=data, cdata=cdata)
             ptests.append(addt)
             # update coverage
             del data[addt.name]
@@ -109,7 +140,11 @@ class Prio:
                     no_new_coverage = False
             if no_new_coverage:
                 remain = list(data.values())
-                rand.shuffle(remain)
+                if cdata == None:
+                    rand.shuffle(remain)
+                else:
+                    remain = sorted(remain, key=lambda x:(cdata[x.name], bt()))
+                    # print("sort based on cdata")
                 ptests += remain
                 break
         return ptests
@@ -253,8 +288,17 @@ class Prio:
 
 
 ################### utils
+def compare_complexity(atest, btest, cdata):
+    if cdata == None:
+        return bt()>bt()
+    else:
+        if atest.name not in cdata or btest.name not in cdata:
+            return bt()>bt()
+        if cdata[atest.name] > cdata[btest.name] or (cdata[atest.name] == cdata[btest.name] and bt()>bt()):
+            return True
+        return False
 
-def max_add_test(data, mode=None, runtime=None):
+def max_add_test(data, mode=None, runtime=None, cdata=None):
     # find test in additional tcps
     # mode: div or bt
     new_test = rand.sample(list(data.values()), 1)[0]
@@ -263,7 +307,7 @@ def max_add_test(data, mode=None, runtime=None):
         for x in data.values():
             temp = len(x.rd)
             curr_best = len(new_test.rd)
-            if temp > curr_best or (temp==curr_best and bt()>bt()):
+            if temp > curr_best or (temp==curr_best and compare_complexity(x, new_test, cdata)):
                 new_test = x
     # div time or bt time
     else:
@@ -271,7 +315,7 @@ def max_add_test(data, mode=None, runtime=None):
             for x in data.values():
                 temp = len(x.rd)/runtime[x.name]
                 curr_best = len(new_test.rd)/runtime[new_test.name]
-                if temp > curr_best or (temp==curr_best and bt()>bt()):
+                if temp > curr_best or (temp==curr_best and compare_complexity(x, new_test, cdata)):
                     new_test = x
         elif mode == "bt":
             for x in data.values():
@@ -280,7 +324,7 @@ def max_add_test(data, mode=None, runtime=None):
                 temp_t = runtime[x.name]
                 new_test_t = runtime[new_test.name]
                 if temp > curr_best or (temp==curr_best and temp_t < new_test_t) \
-                    or (temp==curr_best and temp_t < new_test_t and bt()>bt()):
+                    or (temp==curr_best and temp_t < new_test_t and compare_complexity(x, new_test, cdata)):
                     new_test = x
     return new_test
 

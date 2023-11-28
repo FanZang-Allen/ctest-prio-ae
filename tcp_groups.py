@@ -257,6 +257,34 @@ complexity_halstead = ("complexity_halstead", [
     CB_HA_I_L_BT,
     ])
 
+complexity_augmented = ("complexity_augmented", [
+    A_CC_S_CA,
+    T_CC_M_CA,
+    A_CC_M_CA,
+    T_CC_S_CA,
+    T_PC_CA,
+    A_PC_CA,
+    T_PCC_CA,
+    A_PCC_CA,
+    T_ST_M_CA,
+    A_ST_M_CA,
+    T_STC_M_CA,
+    A_STC_M_CA,
+    
+    T_CC_M,
+    A_CC_M,
+    T_CC_S,
+    A_CC_S,
+    T_PC,
+    A_PC,
+    T_PCC,
+    A_PCC,
+    T_ST_M,
+    A_ST_M,
+    T_STC_M,
+    A_STC_M,
+    ])
+
 groups = {
     "alltcp": alltcp,
     "nonpeer": nonpeer,
@@ -270,5 +298,6 @@ groups = {
     "complexity_cyclo": complexity_cyclo,
     "complexity_halstead": complexity_halstead,
     "complexity_combined": complexity_combined,
+    "complexity_augmented": complexity_augmented,
     # "YOUR_GROUP": your_group,
 }

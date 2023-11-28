@@ -299,10 +299,11 @@ def rm_invalid_test(testinfo):
     cc_stmt = set(code_coverage("stmt").keys())
     cc_method = set(code_coverage("method").keys())
     default_rt = set(default_runtime().keys())
+    complexity_ctest = set(cyclomatic_complexity().keys())
     img_ctests = param_coverage(change_aware=True)
     failures, misconfs = failure_map() # per image
 
-    testwithdata = cc_stmt.intersection(cc_method).intersection(default_rt)
+    testwithdata = cc_stmt.intersection(cc_method).intersection(default_rt).intersection(complexity_ctest)
     for imgname in testinfo:
         test_keys = set(testinfo[imgname].keys())
         ctests = set(img_ctests[imgname].keys())

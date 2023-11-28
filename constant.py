@@ -130,6 +130,20 @@ CB_HA_I_V = "cb_halstead_inherit_volume"
 CB_HA_I_N = "cb_halstead_inherit_vocabulary"
 CB_HA_I_L = "cb_halstead_inherit_length"
 
+# complexity augmented, break tie by using cyclomatic comlexity and halstead program volume
+T_CC_M_CA = "tot_ccm_ca"
+A_CC_M_CA = "add_ccm_ca"
+T_CC_S_CA = "tot_ccs_ca"
+A_CC_S_CA = "add_ccs_ca"
+T_PC_CA = "tot_pc-sys_ca"
+A_PC_CA = "add_pc-sys_ca"
+T_PCC_CA = "tot_pc-chg_ca"
+A_PCC_CA = "add_pc-chg_ca"
+T_ST_M_CA = "tot_st-sys_ca"
+A_ST_M_CA = "add_st-sys_ca"
+T_STC_M_CA = "tot_st-chg_ca"
+A_STC_M_CA = "add_st-chg_ca"
+
 # hybrid, divided by time
 RANDOMIZED_DIV = "randomized_div"
 QTF_DIV = "qtf_div"
@@ -269,6 +283,9 @@ A_PF_RCC_BT = "add_pf_rcc_bt"
 IMG_DEPENDENT = set([
     T_PCC, A_PCC,
     T_STC_M, A_STC_M, 
+
+    T_PCC_CA, A_PCC_CA,
+    T_STC_M_CA, A_STC_M_CA, 
 
     T_PCC_DIV, A_PCC_DIV,
     T_STC_M_DIV, A_STC_M_DIV,

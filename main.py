@@ -72,9 +72,35 @@ def load_prio_data(tcp):
             ha_data[key] = cb_data[key] + value
         return ha_data
 
-    # hybrid
     data = {"d1": {}, "d2": {}, "d3": {}}
-    if tcp in [T_CC_M_DIV, A_CC_M_DIV, T_CC_M_BT, A_CC_M_BT]:
+    # complexity augmented
+    cb_data = parsing_utils.cyclomatic_complexity()
+    ha_data = parsing_utils.halstead_metric("simple", ["volume", "length"])
+    ca_data = {}
+    for key, value in ha_data.items():
+        ca_data[key] = cb_data[key] + value
+
+    if tcp in [T_CC_M_CA, A_CC_M_CA]:
+        data["d1"] = parsing_utils.code_coverage("method")
+        data["d2"] = ca_data
+    elif tcp in [T_CC_S_CA, A_CC_S_CA]:
+        data["d1"] = parsing_utils.code_coverage("stmt")
+        data["d2"] = ca_data
+    elif tcp in [T_PC_CA, A_PC_CA]:
+        data["d1"] = parsing_utils.param_coverage(change_aware=False)
+        data["d2"] = ca_data
+    elif tcp in [T_PCC_CA, A_PCC_CA]:
+        data["d1"] = parsing_utils.param_coverage(change_aware=True)
+        data["d2"] = ca_data
+    elif tcp in [T_ST_M_CA, A_ST_M_CA]:
+        data["d1"] = parsing_utils.config_trace_coverage(change_aware=False)
+        data["d2"] = ca_data
+    elif tcp in [T_STC_M_CA, A_STC_M_CA]:
+        data["d1"] = parsing_utils.config_trace_coverage(change_aware=True)
+        data["d2"] = ca_data
+
+    # runtime hybrid
+    elif tcp in [T_CC_M_DIV, A_CC_M_DIV, T_CC_M_BT, A_CC_M_BT]:
         data["d1"] = parsing_utils.code_coverage("method")
         data["d2"] = parsing_utils.default_runtime()
     elif tcp in [T_CC_S_DIV, A_CC_S_DIV, T_CC_S_BT, A_CC_S_BT]:
@@ -160,7 +186,7 @@ def prioritize(imgname, tcp, testinfo):
     # given a conf change and a tcp, return result logs
     prio_data = load_prio_data(tcp)
     prio = ordering.Prio(tcp, imgname, testinfo, prio_data)
-    if not tcp.endswith("_div") and not tcp.endswith("_bt"):
+    if not tcp.endswith("_div") and not tcp.endswith("_bt") and not tcp.endswith("_ca"):
         # basic
         if tcp.startswith("add"):
             prio.additional()
@@ -176,6 +202,11 @@ def prioritize(imgname, tcp, testinfo):
             prio.complexity_based()
         else:
             exit("prioritize: unknown basic tcp: {}".format(tcp))
+    elif tcp.endswith("_ca"):
+        if tcp.startswith("add"):
+            prio.complexity_augmented(additional=True)
+        elif tcp.startswith("tot"):
+            prio.complexity_augmented(additional=False)
     else:
         # hybrid
         if tcp.startswith("add"):
