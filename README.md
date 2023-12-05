@@ -1,4 +1,34 @@
+# Update for original project
 
+## Overview
+
+This is a fork repository of Ctest prioritization project. By utilizing the configuration change in Ctest dataset and collected complexity metric of all ctest using this [tool](https://github.com/FanZang-Allen/complexity-based-tcp/tree/main), I successfully implement and evaluate a brand new type of non-peer based TCP algorithm: complexity-based TCP. In constant.py, you can see all new developed TCP algorithms and corresponding ordering functions in ordering.py. In tcp_groups.py you can see new defined tcp groups:
+
+- complexity_cyclo: TCP algorithm that utilize the cyclomatic complexity metric
+- complexity_halstead： TCP algorithm that utilize the halstead software metrics
+- complexity_combined: TCP algorithm that utilize both metrics
+- complexity_augmented: original non-peer TCP algorithm augmented using complexity metrics
+
+## Result
+
+- All used new complexity metrics derived from this [tool](https://github.com/FanZang-Allen/complexity-based-tcp/tree/main) are put in testInfo folder.
+- All evaluated results for all new implemented algorithm are put in prioResult folder
+- All running logs are put in logs folder
+
+## Reproducibility
+
+Use the same command used for original tcp groups, you can reproduce all evaluation results. For example, for complexity_cyclo tcp group, after you complete the set up, run the following command:
+
+```Bash
+# run all complexity cyclo algroithms
+python3 main.py --project=hadoop-hdfs --tcps=complexity_cyclo --nrun=10 --metric=APMDc,APMD --logdir=logs
+# takes ~30 seconds, output to logs/hadoop-hdfs.log
+
+# process logs and generate HSD tables
+cd prioResult
+python3 preprocess.py --logdir=../logs --tcps=fast --nrun=10 --metric=APMDc,APMD
+# output 4 data tables in prioData/ and 2 HSD tables in hsdTable/ for randomized and QTF TCP
+```
 
 # Research Artifacts: Test-Case Prioritization for Configuration Testing
 
